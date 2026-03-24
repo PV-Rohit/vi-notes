@@ -1,130 +1,53 @@
-# Vi-Notes
+# Vi-Notes Platform
 
-**Vi-Notes** is an authenticity verification platform designed to distinguish genuine human-written content from AI-generated or AI-assisted text. The system focuses on analyzing **writing behavior** alongside **statistical and linguistic characteristics** of the text to establish reliable authorship verification.
+Vi-Notes is an authenticity verification platform that ensures genuine human writing through keyboard activity monitoring. 
 
-This repository represents the **design and conceptual foundation** for the Vi-Notes system.
+This repository contains the minimum viable product (MVP) implementing the following key features:
+1. **Basic Writing Editor**: Distraction-free interface capturing typing data.
+2. **User Login & Registration**: Account creation to bind sessions.
+3. **Capture Keystroke Timing**: Captures exact dwell times and flight times during composition without storing individual characters prior to save.
+4. **Detect Pasted Text**: Counts paste events and lengths.
+5. **Save Session Data**: Stores the entire typing metadata to a MongoDB database for future statistical analysis.
 
----
+## Prerequisites
 
-## Motivation
+- **Node.js**: v18 or newer recommended.
+- **MongoDB**: A running instance on `mongodb://127.0.0.1:27017` or configured via `.env`.
 
-With the widespread availability of AI writing tools, verifying true human authorship has become increasingly challenging. Most existing detection methods rely primarily on textual analysis, which can be inconsistent and easy to bypass.
+## Installation & Running
 
-Vi-Notes approaches this problem by combining:
-- Behavioral signals from the writing process
-- Statistical analysis of the written content
-- Correlation between how content is written and what is written
+The project consists of a `backend` and a `frontend`.
 
----
+### 1. Start the Backend Server
 
-## Core Idea
+```bash
+cd backend
+npm install
+npm run dev
+```
 
-Human writing naturally includes:
-- Variable typing speeds
-- Pauses during thinking
-- Revisions during idea formation
-- Irregular sentence structures
-- A relationship between content complexity and editing frequency
+This will run the Express API on `http://localhost:5000` connected to MongoDB. 
+**Note**: It requires MongoDB to be running locally. If using a remote instance, create a `.env` file in `backend/` and set `MONGO_URI=your_connection_string`.
 
-AI-generated or pasted text often lacks these behavioral signatures.
+### 2. Start the Frontend Application
 
-Vi-Notes is designed to capture and analyze these characteristics to assess authorship authenticity.
+Open a new terminal window:
 
----
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Key Features
+This will run the Vite-React app on `http://localhost:5173/`.
 
-### Writing Session Monitoring
-- Capture keystroke timing metadata (not raw key content)
-- Track pauses, deletions, edits, and writing flow
-- Detect pasted or externally inserted text blocks
+## Architecture Details
 
-### Behavioral Pattern Analysis
-- Pause distribution before sentences and paragraphs
-- Typing speed variance
-- Revision frequency relative to text complexity
-- Micro-pauses around punctuation and structural boundaries
+- **Backend (Node.js + Express + TypeScript)**
+  - RESTful APIs for Auth and Session recording.
+  - Data models: `User` and `Session`.
+  - Sessions store non-PII keystrokes like duration and time gaps. Sensitive keys are stripped.
 
-### Textual Statistical Analysis
-- Sentence length variation
-- Vocabulary diversity metrics
-- Stylistic consistency analysis
-- Linguistic irregularities typical of human writing
-
-### Cross-Verification Engine
-- Correlate keyboard behavior with text evolution
-- Identify mismatches between behavioral data and content
-- Flag suspicious uniformity patterns
-
-### Authenticity Reports
-- Confidence score for human authorship
-- Highlighted suspicious segments
-- Supporting behavioral and textual indicators
-- Shareable verification summaries
-
----
-
-## Tech Stack (MERN Architecture)
-
-### Frontend
-- React
-- TypeScript
-- Electron for desktop-level keyboard event access
-
-### Backend
-- Node.js
-- Express.js
-- RESTful APIs for session handling and analysis
-
-### Database
-- MongoDB
-- Encrypted storage for writing sessions, keystroke metadata, and reports
-
-### Machine Learning
-- TensorFlow / PyTorch
-- Supervised learning for human vs AI-assisted writing
-- Unsupervised anomaly detection
-- NLP-based statistical signature analysis
-
----
-
-## Privacy & Ethics
-
-Vi-Notes is designed with privacy-first principles:
-
-- No storage of raw keystroke content
-- Only timing, frequency, and structural metadata is collected
-- Encrypted data storage
-- User-controlled session tracking
-- Monitoring limited strictly to active writing sessions
-
----
-
-## Project Goals
-
-- Restore trust in written content authenticity
-- Differentiate between human-written, AI-assisted, and AI-generated text
-- Adapt detection methods as AI writing tools evolve
-- Maintain ethical, transparent, and privacy-conscious verification
-
----
-
-## Repository Scope
-
-This repository currently serves as:
-- A design reference
-- A research and experimentation space
-- A foundation for future MERN-based implementation
-
----
-
-## Contributing
-
-Contributions are welcome, especially for **feature requests and their implementation**.  
-If you are interested in working on an existing feature request or proposing a new one, please open or comment on an issue to start the discussion.
-
----
-
-## License
-
-This project is licensed under the MIT License.
+- **Frontend (React + Vite + TailwindCSS)**
+  - `Login` / `Register` forms managed through Context API.
+  - `EditorPage`: Contains the `<textarea>`. It measures exact timestamp deltas using `onKeyDown` and `onKeyUp`, discarding `e.key` payload mapping in the final JSON array to preserve privacy.
