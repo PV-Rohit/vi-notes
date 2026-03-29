@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://vi-notes-gxri.onrender.com';
+const API_URL = 'https://vi-notes-gxri.onrender.com/api';
 
 export const loginUser = async (credentials: { email: string; password: string }) => {
     const response = await axios.post(`${API_URL}/auth/login`, credentials);
